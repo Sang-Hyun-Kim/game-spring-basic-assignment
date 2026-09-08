@@ -1,0 +1,33 @@
+# crimson-citadel 런타임 DB (MySQL). 런타임 DB는 MySQL 하나만 쓴다 (H2는 테스트 전용).
+#
+# 이 PC에는 다른 환경이 이미 공존한다. 절대 건드리지 않는다.
+#   - 네이티브 Windows 서비스 MySQL80  : 호스트 3306 점유 (Running)
+#   - compose 프로젝트 `infra` (AI_MMORPG): mysql 3307 / redis 6379 / mongo 27017
+# 따라서 이름·포트·볼륨·네트워크를 전부 crimson-citadel 네임스페이스로 격리한다.
+# compose 프로젝트 이름(name:)이 컨테이너·볼륨·네트워크 접두사가 되어 충돌을 막는다.
+
+name: crimson-citadel
+
+services:
+  mysql:
+    # infra 프로젝트는 mysql:8.0 을 쓴다. 태그를 분리해 이미지 공유를 피한다.
+    image: mysql:8.4
+    container_name: crimson-citadel-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?docker/.env 에 MYSQL_ROOT_PASSWORD 를 설정하세요}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-crimson_citadel}
+    ports:
+      # 호스트 3308 -> 컨테이너 3306. 3306(네이티브)·3307(infra)을 둘 다 피한 값이다.
+      - "${MYSQL_HOST_PORT:-3308}:3306"
+    volumes:
+      # 실제 볼륨 이름은 crimson-citadel_mysql_data 로 생성된다.
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

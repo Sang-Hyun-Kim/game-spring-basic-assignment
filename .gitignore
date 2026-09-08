@@ -4,11 +4,20 @@ build/
 data/
 *.iml
 
-# --- AI 에이전트 협업 ---
-# 개인 설정/승인 기록은 공유하지 않는다. 공유 설정은 .claude/settings.json.
-.claude/settings.local.json
-.antigravity/local/
-# 로컬 실행 산출물
-.agents/**/*.local.*
-# DB 접속 정보가 들어간다. 실제 값을 커밋하지 않는다.
-src/main/resources/application.properties
+# --- AI 에이전트 협업: 제출물이 아니다. git으로 공유하지 않는다. ---
+/AGENTS.md
+/CLAUDE.md
+/.agents/
+/.antigravity/
+/.claude/
+/.mcp.json
+/.mcp.json.tmp
+# 설명·결정 자료도 제출물이 아니다. docs/images/ 만 남긴다 (ASSIGNMENT.md 가 참조).
+/docs/README.md
+/docs/decisions/
+/AS.md
+
+# --- 제출 정책 ---
+# 이 저장소는 과제 제출물이다. 채점자가 clone 후 그대로 실행할 수 있어야 하므로
+# src/main/resources/application.properties 와 docker/.env 는 **커밋한다.**
+# 담긴 비밀번호는 로컬 과제 전용 더미값(myPWD0908)이며 운영 자격증명이 아니다.
