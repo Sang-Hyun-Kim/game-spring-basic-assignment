@@ -3,3 +3,12 @@
 build/
 data/
 *.iml
+
+# --- AI 에이전트 협업 ---
+# 개인 설정/승인 기록은 공유하지 않는다. 공유 설정은 .claude/settings.json.
+.claude/settings.local.json
+.antigravity/local/
+# 로컬 실행 산출물
+.agents/**/*.local.*
+# DB 접속 정보가 들어간다. 실제 값을 커밋하지 않는다.
+src/main/resources/application.properties

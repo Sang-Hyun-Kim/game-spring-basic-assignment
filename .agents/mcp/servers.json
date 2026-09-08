@@ -1,0 +1,18 @@
+{
+  "//": "MCP 서버 정의 SSOT. 이 파일만 손으로 고친다. 적용: node .agents/scripts/sync-mcp.mjs",
+  "//secrets": "비밀값은 ${ENV_VAR} 로만 적는다. 실제 토큰을 이 파일에 절대 쓰지 않는다.",
+
+  "servers": {
+    "jetbrains": {
+      "targets": ["claude-code", "antigravity"],
+      "note": "IntelliJ 내장 MCP 서버(mcpserver 플러그인). IDE가 켜져 있어야 붙는다. 포트는 IDE 재설치/업데이트 시 바뀔 수 있으니 Settings > Tools > MCP Server 에서 확인한다.",
+      "config": {
+        "type": "http",
+        "url": "http://127.0.0.1:64442/mcp",
+        "headers": {
+          "Authorization": "Bearer ${IJ_MCP_AUTH_TOKEN}"
+        }
+      }
+    }
+  }
+}
