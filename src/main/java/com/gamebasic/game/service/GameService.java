@@ -1,9 +1,6 @@
 package com.gamebasic.game.service;
 
-import com.gamebasic.game.dto.CreateRequest;
-import com.gamebasic.game.dto.GameDetailResponse;
-import com.gamebasic.game.dto.GameSummaryResponse;
-import com.gamebasic.game.dto.ProgressRequest;
+import com.gamebasic.game.dto.*;
 import com.gamebasic.game.entity.Game;
 import com.gamebasic.game.repository.GameRepository;
 import com.gamebasic.runcard.dto.CardResponse;
@@ -124,8 +121,7 @@ public class GameService {
     // 반복된 List<RunCard> 생성 부분을 함수화해서 deck은 반환하는 헬퍼 클래스 제작
 
     @Transactional(readOnly = true)
-    protected List<CardResponse> ReturnDeck(Game game)
-    {
+    protected List<CardResponse> ReturnDeck(Game game) {
         List<RunCard> cards = runCardRepository.findAllByGameOrderByIdAsc(game);
         List<CardResponse> deck = new ArrayList<>();
         for(RunCard card : cards) {
@@ -134,20 +130,16 @@ public class GameService {
         return deck;
     }
 
-
-    // TODO (Lv 8): 플레이어 이름 변경 — 변경 감지로 수정
     @Transactional
-    public void UpdatePlayerName(String Name)
-    {
-
+    public void renameGame(Long gameId, RenameRequest renameRequest) {
+        Game game = findGame(gameId);
+        game.rename(renameRequest.getPlayerName());
     }
 
-
-    // TODO (Lv 8): 게임 삭제
     @Transactional
-    public void DeleteGame(Game game)
-    {
-
+    public void deleteGame(Long gameId) {
+        Game game = findGame(gameId); // 피드백: 기존 findGame 함수에서 없다면 HttpCode로 반환해줌, 따라서 예외처리 코드 삭제
+        runCardRepository.deleteAllByGame(game); // 피드백 RunCard 삭제를 깜박함
+        gameRepository.delete(game);
     }
-
 }
