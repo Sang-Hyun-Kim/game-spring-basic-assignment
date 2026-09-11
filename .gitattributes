@@ -1,3 +1,6 @@
 /gradlew text eol=lf
 *.bat text eol=crlf
 *.jar binary
+
+# 랭킹 원본 JSON: 바이트 단위로 보존한다 (줄끝 변환 금지 · 체크섬 재현용)
+/src/main/resources/ranking/rankings.json -text
