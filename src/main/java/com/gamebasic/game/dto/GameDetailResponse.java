@@ -1,6 +1,5 @@
 package com.gamebasic.game.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.gamebasic.game.entity.GamePhase;
 import com.gamebasic.game.entity.GameStatus;
 import com.gamebasic.runcard.dto.CardResponse;
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 public class GameDetailResponse {
     private final Long id;
     private final String playerName;

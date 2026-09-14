@@ -5,6 +5,7 @@ import com.gamebasic.ranking.dto.RankingSource;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -105,6 +106,7 @@ public class RankingValidation {
     private boolean hasValidFinishingCard(RankingSource.BossFight bossFight
             , RankingSource.Deck deck){
         List<RankingSource.Card> cards = deck.getCards();
-        return cards.stream().anyMatch(c -> bossFight.getFinishingCard().equals(c.getCardType()));
+        // Objects.equals는 양쪽 어느 쪽이 null이어도 안전하다. && 체인의 검사 순서에 기대지 않기 위해서다.
+        return cards.stream().anyMatch(c -> Objects.equals(c.getCardType(), bossFight.getFinishingCard()));
     }
 }

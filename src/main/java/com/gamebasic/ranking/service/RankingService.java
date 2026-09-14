@@ -27,9 +27,10 @@ public class RankingService {
         int excludedCount = targetGameRecords.size() - validGameRecords.size();
         List<GameRecordResponse> gameRecordResponses = new ArrayList<>();
         int rank = 1;
-        HashSet<String> seenPlayerIds = new HashSet<String>();
+        // 같은 플레이어인지는 표시용 이름이 아니라 식별자(player.id)로 판정한다. 이름은 겹치거나 바뀔 수 있다.
+        HashSet<String> seenPlayerIds = new HashSet<>();
         for(RankingSource.GameRecord record : validGameRecords){
-            if(seenPlayerIds.add(record.getPlayer().getName())){ // java의 set은 넣을 때 중복이면 false를 반환해주는구나
+            if(seenPlayerIds.add(record.getPlayer().getId())){ // java의 set은 넣을 때 중복이면 false를 반환해주는구나
                 gameRecordResponses.add(
                         new GameRecordResponse(
                                 rank++,
@@ -37,7 +38,8 @@ public class RankingService {
                                 record.getRun().getDurationSeconds(),
                                 record.getRun().getFinalHp(),
                                 record.getBossFight().getTotalTurns(),
-                                record.getDeck().getSize()
+                                // 신고값(deck.size)이 아니라 실제 카드 개수를 센다. 검증 통과 여부에 응답이 매달리지 않게.
+                                record.getDeck().getCards().size()
                         )
                 );
             }
