@@ -1,9 +1,13 @@
 package com.gamebasic.game.controller;
 
+import com.gamebasic.common.dto.PageResponse;
 import com.gamebasic.game.dto.*;
 import com.gamebasic.game.service.GameService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +36,14 @@ public class GameController {
     @GetMapping("/games")
     public ResponseEntity<List<GameSummaryResponse>> getGames() {
         return ResponseEntity.ok(gameService.getGames());
+    }
+
+    @GetMapping("/games/paged")
+    public ResponseEntity<PageResponse<GameSummaryResponse>> getGamesPage(
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ){
+        return ResponseEntity.ok(gameService.getGamesPage(pageable));
     }
 
     @GetMapping("/games/{gameId}")

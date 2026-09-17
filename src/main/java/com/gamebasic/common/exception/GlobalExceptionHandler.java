@@ -4,6 +4,7 @@ import com.gamebasic.common.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -51,6 +52,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ErrorResponse> handleUnreadable(Exception e, HttpServletRequest request) {
         return respond(HttpStatus.BAD_REQUEST, "요청 본문이나 파라미터 형식이 올바르지 않습니다.", request);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSortProperty(HttpServletRequest request){
+        return respond(HttpStatus.BAD_REQUEST, "정렬에 사용할 수 없는 값입니다.", request);
     }
 
     private ResponseEntity<ErrorResponse> respond(HttpStatus status, String message, HttpServletRequest request) {
