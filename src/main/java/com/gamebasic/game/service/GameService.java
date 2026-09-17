@@ -1,5 +1,6 @@
 package com.gamebasic.game.service;
 
+import com.gamebasic.common.dto.PageResponse;
 import com.gamebasic.common.exception.GameFinishedException;
 import com.gamebasic.common.exception.GameNotFoundException;
 import com.gamebasic.game.dto.*;
@@ -11,12 +12,15 @@ import com.gamebasic.runcard.dto.RunCardRequest;
 import com.gamebasic.runcard.entity.RunCard;
 import com.gamebasic.runcard.repository.RunCardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -91,10 +95,39 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<GameSummaryResponse> getGames() {
         List<Game> games = gameRepository.findAllByOrderByIdDesc();
-        List<DeckCount> deckCounts = runCardRepository.countByGames(games);
 
+        return toSummaries(games);
+    }
+
+    @Transactional(readOnly = true)
+    public GameDetailResponse getGame(Long gameId) {
+        Game game = findGame(gameId);
+
+        return new GameDetailResponse(
+                game.getId(),
+                game.getPlayerName(),
+                game.getCurrentHp(),
+                game.getCurrentFloor(),
+                game.getPhase(),
+                game.getStatus(),
+                ReturnDeck(game),
+                game.getCreatedAt(),
+                game.getUpdatedAt()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<GameSummaryResponse> getGamesPage(Pageable pageable){
+        Page<Game> gamePage = gameRepository.findAll(pageable); // 추후 pageable로 Repository를 통한 DB 접근시 어떻게 반환되는지 절차 질문하기
+        return  PageResponse.of(gamePage, toSummaries(gamePage.getContent())); // 제네릭 팩토리 생성자 호출 패턴가 of 키워드의 의미가 궁금
+    }
+
+    private List<GameSummaryResponse> toSummaries(List<Game> games){
+        if(games.isEmpty()) return new ArrayList<GameSummaryResponse>(); // 게임 목록이 없는 경우
+
+        List<DeckCount> deckCounts = runCardRepository.countByGames(games);
         List<GameSummaryResponse> gameSummaryResponseList = new ArrayList<>();
-        HashMap<Long,Long> gameIdDeckSizeMap = new HashMap<>();
+        Map<Long,Long> gameIdDeckSizeMap = new HashMap<>();
         for(DeckCount deckCount : deckCounts) {
             gameIdDeckSizeMap.put(deckCount.getGameId(), deckCount.getDeckCount());
         }
@@ -115,24 +148,6 @@ public class GameService {
         }
         return gameSummaryResponseList;
     }
-
-    @Transactional(readOnly = true)
-    public GameDetailResponse getGame(Long gameId) {
-        Game game = findGame(gameId);
-
-        return new GameDetailResponse(
-                game.getId(),
-                game.getPlayerName(),
-                game.getCurrentHp(),
-                game.getCurrentFloor(),
-                game.getPhase(),
-                game.getStatus(),
-                ReturnDeck(game),
-                game.getCreatedAt(),
-                game.getUpdatedAt()
-        );
-    }
-
     // 반복된 List<RunCard> 생성 부분을 함수화해서 deck은 반환하는 헬퍼 클래스 제작
 
     @Transactional(readOnly = true)

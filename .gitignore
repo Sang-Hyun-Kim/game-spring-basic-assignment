@@ -21,3 +21,4 @@ data/
 # 이 저장소는 과제 제출물이다. 채점자가 clone 후 그대로 실행할 수 있어야 하므로
 # src/main/resources/application.properties 와 docker/.env 는 **커밋한다.**
 # 담긴 비밀번호는 로컬 과제 전용 더미값(myPWD0908)이며 운영 자격증명이 아니다.
+/InstructorFeedback.txt
